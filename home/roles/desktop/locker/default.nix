@@ -7,6 +7,34 @@ let
   desktopCfg = config.custom.roles.desktop;
   cfg = desktopCfg.locker;
 
+  lockScript = pkgs.writeShellScriptBin "lock" ''
+    PAUSE=$\{PAUSE:-1}
+    PLAY=0
+
+    pauseMusic() {
+      if [ "$\{PAUSE}" -eq 1 ]; then
+        # playerctl is allowed to fail as it's the fastest way to determine if a player
+        # is currently active
+        set +e
+        rs=$(playerctl status)
+        playerctl pause 2> /dev/null
+        set -e
+
+        if [ "$\{rs}" = "Playing" ]; then
+          PLAY=1
+        fi
+      fi
+    }
+
+    # locking workflow
+    pauseMusic && \
+    ${cfg.lockCmd}
+
+    if [ "$\{PLAY}" -eq 1 ]; then
+      playerctl play
+    fi
+  '';
+
 in
 
 {
