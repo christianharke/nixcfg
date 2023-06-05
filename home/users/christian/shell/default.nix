@@ -50,6 +50,7 @@ in
         gnupg
         gron
         htop
+        iftop
         killall
         neofetch
         pandoc

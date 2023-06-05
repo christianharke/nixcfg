@@ -16,22 +16,12 @@
       };
     };
 
-    pre-commit-hooks = {
-      url = "github:cachix/pre-commit-hooks.nix";
-      inputs = {
-        flake-utils.follows = "flake-utils";
-        nixpkgs.follows = "nixpkgs-unstable";
-      };
-    };
-
     # Modules
 
     flake-commons = {
-      url = "github:christianharke/flake-commons";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        pre-commit-hooks.follows = "pre-commit-hooks";
-      };
+      #url = "github:christianharke/flake-commons";
+      url = "/home/chr/code/flake-commons";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     agenix = {
@@ -74,10 +64,7 @@
 
     spacevim = {
       url = "github:christianharke/spacevim-flake";
-      inputs = {
-        nixpkgs.follows = "nixpkgs-unstable";
-        pre-commit-hooks.follows = "pre-commit-hooks";
-      };
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
@@ -93,6 +80,10 @@
     {
       lib = { inputs }:
         import ./lib { inputs = inputs // self.inputs; };
+
+      formatter = forEachSystem (system:
+        customLibFor."${system}".formatter
+      );
 
       homeConfigurations = listToAttrs [
         (mkHome x86_64-linux "demo@non-nixos-vm")
@@ -144,34 +135,40 @@
       ];
 
       checks = mkForEachSystem [
-        (mkGeneric "pre-commit-check" (system:
-          let
-            pkgs = import nixpkgs {
-              inherit system;
-              overlays = [ self.overlays.default ];
-            };
-          in
-          inputs.pre-commit-hooks.lib."${system}".run {
-            src = ./.;
-            hooks = {
-              nixpkgs-fmt.enable = true;
-              shellcheck = {
-                enable = true;
-                entry = nixpkgs.lib.mkForce "${pkgs.lib.getExe pkgs.shellcheckPicky}";
-              };
-              statix.enable = true;
-            };
-          }))
+        #(mkGeneric "pre-commit-check" (system:
+        #  let
+        #    pkgs = import nixpkgs {
+        #      inherit system;
+        #      overlays = [ self.overlays.default ];
+        #    };
+        #  in
+        #  inputs.pre-commit-hooks.lib."${system}".run {
+        #    src = ./.;
+        #    hooks = {
+        #      nixpkgs-fmt.enable = true;
+        #      shellcheck = {
+        #        enable = true;
+        #        entry = nixpkgs.lib.mkForce "${pkgs.lib.getExe pkgs.shellcheckPicky}";
+        #      };
+        #      statix.enable = true;
+        #    };
+        #  }))
 
         (mkBuild "build-nixos-vm" self.nixosConfigurations.nixos-vm.config.system.build.toplevel)
         (mkBuild "build-demo@non-nixos-vm" self.homeConfigurations."demo@non-nixos-vm".activationPackage)
         (mkBuild "build-christian@non-nixos-vm" self.homeConfigurations."christian@non-nixos-vm".activationPackage)
+        (mkGeneric "deadnix" (system: customLibFor."${system}".checks.deadnix))
+        (mkGeneric "nixpkgs-fmt" (system: customLibFor."${system}".checks.nixpkgs-fmt))
+        (mkGeneric "statix" (system: customLibFor."${system}".checks.statix))
+        (mkGeneric "markdownlint" (system: customLibFor."${system}".checks.markdownlint))
+        (mkGeneric "shellcheck" (system: customLibFor."${system}".checks.shellcheck))
+        (mkGeneric "yamllint" (system: customLibFor."${system}".checks.yamllint))
       ];
 
+      # TODO: Migrate to customLib.mkShell
       devShells = mkForEachSystem [
         (mkDevShell "default" {
           name = "nixcfg";
-          checksShellHook = system: self.checks."${system}".pre-commit-check.shellHook;
           packages = pkgs: with pkgs; [ nixpkgs-fmt shellcheck statix ];
         })
       ];

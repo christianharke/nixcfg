@@ -11,17 +11,16 @@ let
       x86_64-linux
     ];
 
+  mkCommonsLib = flake: system:
+    inputs.flake-commons.lib { inherit system flake; };
+
   pkgsFor = forEachSystem (system: import ./nixpkgs.nix { inherit inputs system; });
   customLibFor = forEachSystem (system:
     let
       pkgs = pkgsFor."${system}";
     in
-    inputs.flake-commons.lib
-      {
-        inherit (inputs.nixpkgs) lib;
-        inherit pkgs;
-        rootPath = inputs.self;
-      } // {
+    mkCommonsLib inputs.self system //
+    {
       nixGLWrap = pkg: pkgs.runCommand "${pkg.name}-nixgl-wrapper" { } ''
         mkdir $out
         ln -s ${pkg}/* $out
@@ -69,11 +68,11 @@ let
 in
 
 {
-  inherit forEachSystem;
+  inherit mkCommonsLib customLibFor forEachSystem;
   mkForEachSystem = bs: forEachSystem (system: (inputs.nixpkgs.lib.listToAttrs (map (b: b system) bs)));
   mkApp = wrapper ./builders/mkApp.nix;
   mkBuild = name: args: nameValuePairWrapper name (system: args);
-  mkCheck = wrapper ./builders/mkCheck.nix;
+  mkScript = wrapper ./builders/mkScript.nix;
   mkDevShell = wrapper ./builders/mkDevShell.nix;
   mkGeneric = nameValuePairWrapper;
   mkHome = simpleWrapper ./builders/mkHome.nix;
