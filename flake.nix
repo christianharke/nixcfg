@@ -177,7 +177,7 @@
           (mkBuild "build-macos" self.darwinConfigurations.macos.system)
         ]) // (mkForSystem x86_64-linux [
           #(mkBuild "build-christian@non-nixos" self.homeConfigurations."christian@non-nixos".activationPackage)
-          #(mkBuild "build-demo@non-nixos" self.homeConfigurations."demo@non-nixos".activationPackage)
+          (mkBuild "build-demo@non-nixos" self.homeConfigurations."demo@non-nixos".activationPackage)
           (mkBuild "build-nixos" self.nixosConfigurations.nixos.config.system.build.toplevel)
         ]));
 
