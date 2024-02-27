@@ -4,14 +4,14 @@ with lib;
 
 let
 
-  cfg = config.custom.programs.kmonad;
+  cfg = config.custom.roles.desktop.kanata;
 
   mkService = kbd-dev: kbd-path:
     {
-      name = "kmonad-${kbd-dev}";
+      name = "kanata-${kbd-dev}";
       value = {
         Unit = {
-          Description = "KMonad Instance for: ${kbd-dev}";
+          Description = "Kanata Instance for: ${kbd-dev}";
         };
         Service = {
           Type = "simple";
@@ -28,12 +28,12 @@ let
 in
 
 {
-  options.custom.programs.kmonad = {
+  options.custom.roles.desktop.kanata = {
     enable = mkOption {
       type = types.bool;
       default = false;
       description = ''
-        Whether to enable KMonad service.
+        Whether to enable Kanata service.
       '';
     };
 
@@ -50,15 +50,20 @@ in
 
     package = mkOption {
       type = types.package;
-      default = pkgs.kmonad;
+      default = pkgs.unstable.kanata;
       description = ''
-        The KMonad package.
+        The Kanata package.
       '';
     };
   };
 
   config = mkIf cfg.enable {
     home.packages = [ cfg.package ];
+    launchd.agents = {
+      "kanata-macbook".config = {
+        Program = "${cfg.package}";
+      };
+    };
     systemd.user.services = listToAttrs (mapAttrsToList mkService cfg.configFiles);
   };
 }

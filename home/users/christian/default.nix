@@ -26,8 +26,8 @@ in
         fonts.enable = !config.custom.roles.mobile.enable;
         git.enable = true;
         gpg.enable = true;
-        hardware = mkIf config.lib.custom.sys.isLinux {
-          kmonad.enable = !config.custom.roles.mobile.enable;
+        hardware = {
+          kanata.enable = !config.custom.roles.mobile.enable;
         };
         mobile.enable = config.custom.roles.mobile.enable;
         office.cli.enable = config.custom.roles.office.cli.enable;

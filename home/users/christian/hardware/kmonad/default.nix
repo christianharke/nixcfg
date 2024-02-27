@@ -16,11 +16,11 @@ in
   };
 
   config = mkIf cfg.enable {
-    custom.programs.kmonad = {
+    custom.roles.desktop.kmonad = {
       enable = true;
       configFiles = {
-        WASD_V3 = ./wasd-v3.de-ch.kbd;
-        CHERRY_G80 = ./cherry-mx-g80-3000n-tkl-rgb.de-ch.kbd;
+        WASD_V3 = ./configs/wasd-v3.de-ch.kbd;
+        CHERRY_G80 = ./configs/cherry-mx-g80-3000n-tkl-rgb.de-ch.kbd;
       };
     };
   };
