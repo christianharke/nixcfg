@@ -162,7 +162,7 @@ in
 
       enable = true;
       settings = {
-        #border-width = 2;
+        border-width = 2;
         #declare-mode = [
         #  "locked"
         #  "normal"
