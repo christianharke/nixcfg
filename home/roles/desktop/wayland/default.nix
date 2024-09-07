@@ -19,5 +19,7 @@ in
     home.packages = with pkgs; [
       wl-clipboard
     ];
+
+    custom.roles.desktop.wayland.river.enable = true;
   };
 }
