@@ -176,11 +176,17 @@ in
         #    tap = false;
         #  };
         #};
-        #map = {
-        #  normal = {
-        #    "Alt Q" = "close";
-        #  };
-        #};
+        map = {
+          normal = {
+            "Super+Shift Return" = "spawn alacritty";
+            "Super+Shift C" = "close";
+            "Super+Shift Q" = "exit";
+            "Super J" = "focus-view next";
+            "Super K" = "focus-view previous";
+            "Super+Shift J" = "swap next";
+            "Super+Shift K" = "swap previous";
+          };
+        };
         #rule-add = {
         #  "-app-id" = {
         #    "'bar'" = "csd";
