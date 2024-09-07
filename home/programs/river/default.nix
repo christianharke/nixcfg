@@ -6,6 +6,11 @@ let
 
   cfg = config.custom.programs.river;
 
+  package =
+    if config.custom.base.non-nixos.enable
+    then config.lib.custom.nixGLWrap pkgs.river
+    else pkgs.river;
+
 in
 
 {
@@ -153,6 +158,8 @@ in
     };
 
     wayland.windowManager.river = {
+      inherit package;
+
       enable = true;
       settings = {
         #border-width = 2;
