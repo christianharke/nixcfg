@@ -193,10 +193,10 @@ in
         #};
         #set-cursor-warp = "on-output-change";
         #set-repeat = "50 300";
-        #spawn = [
-        #  "firefox"
-        #  "'foot -a terminal'"
-        #];
+        spawn = [
+          "alacritty"
+          "firefox"
+        ];
         #xcursor-theme = "someGreatTheme 12";
       };
     };
