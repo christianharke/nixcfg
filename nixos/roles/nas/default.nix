@@ -87,6 +87,15 @@ in
         };
       };
 
+    # Fix post-resume service failing with status `6/NOTCONFIGURED`
+    systemd.services.post-resume = {
+      after = [
+        "network.target"
+        "network-online.target"
+      ];
+      wants = [ "network-online.target" ];
+    };
+
     services.glances = {
       enable = true;
       openFirewall = true;
